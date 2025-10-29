@@ -16,7 +16,7 @@
                         type="email" 
                         id="email" 
                         name="email"
-                        class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:border-cyan-500 transition"
+                        class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition"
                         placeholder="you@example.com"
                         required
                     >
@@ -29,7 +29,7 @@
                         type="password" 
                         id="password" 
                         name="password"
-                        class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:border-cyan-500 transition"
+                        class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition"
                         placeholder="••••••••"
                         required
                     >
@@ -38,7 +38,7 @@
 
                 <button 
                     type="submit"
-                    class="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-lg font-semibold transition"
+                    class="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-lg font-semibold transition"
                 >
                     Sign In
                 </button>
@@ -53,22 +53,43 @@
 </main>
 
 <script>
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+function validatePassword(password) {
+    return password.length >= 6;
+}
+
+function getUsers() {
+    return JSON.parse(localStorage.getItem('users')) || [];
+}
+
+function setCurrentUser(user) {
+    localStorage.setItem('currentUser', JSON.stringify(user));
+}
+
 document.getElementById('loginForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    document.querySelectorAll('.error-message').forEach(el => el.classList.add('hidden'));
     
     const validation = validateEmail(email) && validatePassword(password);
     
     if (!validation) {
         if (!validateEmail(email)) {
-            document.querySelector('[name="email"]').nextElementSibling.textContent = 'Invalid email';
-            document.querySelector('[name="email"]').nextElementSibling.classList.remove('hidden');
+            const emailError = document.querySelector('[name="email"]').nextElementSibling;
+            emailError.textContent = 'Invalid email';
+            emailError.classList.remove('hidden');
         }
         if (!validatePassword(password)) {
-            document.querySelector('[name="password"]').nextElementSibling.textContent = 'Password must be at least 6 characters';
-            document.querySelector('[name="password"]').nextElementSibling.classList.remove('hidden');
+            const passError = document.querySelector('[name="password"]').nextElementSibling;
+            passError.textContent = 'Password must be at least 6 characters';
+            passError.classList.remove('hidden');
         }
         return;
     }
