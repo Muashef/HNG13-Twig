@@ -88,6 +88,33 @@
             <!-- Tickets will be rendered here -->
         </div>
     </div>
+
+    <!-- Edit Ticket Modal -->
+<div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-slate-800 rounded-lg p-6 w-full max-w-md relative">
+        <button onclick="closeEditModal()" class="absolute top-2 right-2 text-slate-400 hover:text-white text-xl">&times;</button>
+        <h2 class="text-2xl font-bold mb-4">Edit Ticket</h2>
+        <form id="editTicketForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Title</label>
+                <input type="text" id="editTitle" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded focus:outline-none focus:border-cyan-500" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Description</label>
+                <textarea id="editDescription" rows="3" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded focus:outline-none focus:border-cyan-500"></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Priority</label>
+                <select id="editPriority" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded focus:outline-none focus:border-cyan-500">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <button type="submit" class="px-6 py-2 bg-cyan-600 hover:bg-cyan-700 rounded font-semibold transition">Save Changes</button>
+        </form>
+    </div>
+</div>
 </main>
 
 <script>
@@ -182,6 +209,8 @@ function updateTicketStatus(id, status) {
     }
 }
 
+
+
 document.getElementById('ticketForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -232,9 +261,46 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 
 document.querySelector('[data-filter="all"]').classList.add('bg-cyan-600');
 
+let editingTicketId = null;
+
 function editTicket(id) {
-    alert('Edit ticket feature coming soon! Ticket ID: ' + id);
+    const ticket = getTickets().find(t => t.id === id);
+    if (!ticket) return;
+
+    editingTicketId = id;
+    document.getElementById('editTitle').value = ticket.title;
+    document.getElementById('editDescription').value = ticket.description;
+    document.getElementById('editPriority').value = ticket.priority;
+
+    document.getElementById('editModal').classList.remove('hidden');
 }
+
+function closeEditModal() {
+    editingTicketId = null;
+    document.getElementById('editModal').classList.add('hidden');
+}
+
+document.getElementById('editTicketForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!editingTicketId) return;
+
+    const tickets = getTickets();
+    const ticket = tickets.find(t => t.id === editingTicketId);
+    if (!ticket) return;
+
+    ticket.title = document.getElementById('editTitle').value.trim();
+    ticket.description = document.getElementById('editDescription').value.trim();
+    ticket.priority = document.getElementById('editPriority').value;
+
+    localStorage.setItem('tickets', JSON.stringify(tickets));
+    updateStats();
+    renderTickets();
+    closeEditModal();
+});
+
+// function editTicket(id) {
+//     alert('Edit ticket feature coming soon! Ticket ID: ' + id);
+// }
 
 initDashboard();
 </script>
