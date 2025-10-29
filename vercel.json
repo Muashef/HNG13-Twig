@@ -1,12 +1,15 @@
 {
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://hng13-twig.up.railway.app/$1",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "https://hng13-twig.up.railway.app/api/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "https://hng13-twig.up.railway.app/$1"
     }
   ]
 }
